@@ -99,7 +99,8 @@ export class EthModule {
     private readonly _throwOnTransactionFailures: boolean,
     private readonly _throwOnCallFailures: boolean,
     private readonly _logger: ModulesLogger,
-    private readonly _experimentalHardhatNetworkMessageTraceHooks: BoundExperimentalHardhatNetworkMessageTraceHook[] = []
+    private readonly _experimentalHardhatNetworkMessageTraceHooks: BoundExperimentalHardhatNetworkMessageTraceHook[] = [],
+    private _blockNumber: string
   ) {}
 
   public async processRequest(
@@ -325,8 +326,13 @@ export class EthModule {
   }
 
   private async _blockNumberAction(): Promise<string> {
+    if (this._blockNumber) {
+      return this._blockNumber;
+    }
+    
     const blockNumber = await this._node.getLatestBlockNumber();
-    return numberToRpcQuantity(blockNumber);
+    this._blockNumber = numberToRpcQuantity(blockNumber);
+    return this._blockNumber;
   }
 
   // eth_call
